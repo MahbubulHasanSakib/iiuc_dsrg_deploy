@@ -14,7 +14,7 @@ const PORT=process.env.port||5000;
 dotenv.config()
 
 const app=express()
-//app.use(express.static(path.join(__dirname,'/public')));
+app.use(express.static(path.join(__dirname,'/public')));
 app.use(express.json())
 
 
@@ -227,10 +227,10 @@ app.get('/api/deleteMember/:id',isAuth,async(req,res)=>{
         }
 })
 
-app.use(express.static(path.join(__dirname, "./client/build")));
+app.use(express.static(path.join(__dirname, './client/build')));
 app.get("*", function (_, res) {
   res.sendFile(
-    path.join(__dirname, "./client/build/index.html"),
+    path.join(__dirname, './client/build/index.html'),
     function (err) {
       res.status(500).send(err);
     }
