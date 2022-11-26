@@ -227,10 +227,15 @@ app.get('/api/deleteMember/:id',isAuth,async(req,res)=>{
         }
 })
 
+var filePath = "./client/build/index.html"
+ var resolvedPath = path.resolve(filePath);
+ console.log(resolvedPath);
+ 
+
 app.use(express.static(path.join(__dirname, './client/build')));
 app.get("*", function (_, res) {
-  res.sendFile(
-    path.join(__dirname, './client/build/index.html'),
+  return res.sendFile(
+    resolvedPath,
     function (err) {
       res.status(500).send(err);
     }
