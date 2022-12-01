@@ -14,7 +14,6 @@ const PORT=process.env.port||5000;
 dotenv.config()
 
 const app=express()
-app.use(express.static(path.join(__dirname,'/public')));
 app.use(express.json())
 
 
@@ -23,8 +22,8 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 .catch((err)=>console.log(err))
 
 app.use(cors())
-
-
+app.use(express.static(path.join(__dirname,'/public')));
+app.use(express.static(path.join(__dirname, './client/build')));
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -227,19 +226,10 @@ app.get('/api/deleteMember/:id',isAuth,async(req,res)=>{
         }
 })
 
-var filePath = "./client/build/index.html"
- var resolvedPath = path.resolve(filePath);
- console.log(resolvedPath);
- 
 
-app.use(express.static(path.join(__dirname, './client/build')));
-app.get("*", function (_, res) {
-  return res.sendFile(
-    resolvedPath,
-    function (err) {
-      res.status(500).send(err);
-    }
-  );
+
+app.get("*", function (req,res) {
+  res.sendFile(path.join(__dirname, './client/build/index.html'));
 });
 
 app.listen(PORT,(err)=>
