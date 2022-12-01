@@ -229,7 +229,7 @@ app.get('/api/deleteMember/:id',isAuth,async(req,res)=>{
 
 
 app.get("*", function (req,res) {
-  res.sendFile(path.join(__dirname, './client/build/index.html'));
+  res.sendFile(__dirname+'/client/build/index.html');
 });
 
 app.listen(PORT,(err)=>
