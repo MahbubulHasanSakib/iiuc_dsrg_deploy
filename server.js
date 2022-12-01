@@ -23,7 +23,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 
 app.use(cors())
 app.use(express.static(path.join(__dirname,'/public')));
-app.use(express.static(path.join(__dirname, '/client/build')));
+app.use(express.static(path.join(__dirname, './client/build')));
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -229,7 +229,7 @@ app.get('/api/deleteMember/:id',isAuth,async(req,res)=>{
 
 
 app.get("*", function (req,res) {
-  res.sendFile(__dirname+'/client/build/index.html');
+  res.sendFile(path.join(__dirname, './client/build/index.html'));
 });
 
 app.listen(PORT,(err)=>
