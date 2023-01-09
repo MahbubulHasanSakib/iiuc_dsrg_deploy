@@ -39,12 +39,13 @@ const Header=()=> {
              to="/about">About</Nav.Link>
             <NavDropdown 
              className={`${(currentLocation!=="/about" && currentLocation!=="/publication" 
-             && currentLocation!=="/" && currentLocation!=="/members" && !(params.id))?
-             "activeNavLink":""}`} title="Executive Body" id="navbarScrollingDropdown">
+             && currentLocation!=="/" && currentLocation!=="/events-news" && currentLocation!=="/blogs")?
+             "activeNavLink":""}`} title="Team" id="navbarScrollingDropdown">
               <NavDropdown.Item className={`${currentLocation==="/founder-and-head"?"activeNavLink":""}`} as={Link} to="/founder-and-head">Founder and Head</NavDropdown.Item>
               <NavDropdown.Item className={`${currentLocation==="/advisory-panel"?"activeNavLink":""}`} as={Link} to="/advisory-panel">Advisory Panel</NavDropdown.Item>
               <NavDropdown.Item className={`${currentLocation==="/teacher-trainer"?"activeNavLink":""}`} as={Link} to="/teacher-trainer">Teacher/Trainer</NavDropdown.Item>
               <NavDropdown.Item className={`${currentLocation==="/commitee-members"?"activeNavLink":""}`} as={Link} to="/commitee-members">Commitee Members</NavDropdown.Item>
+               <NavDropdown.Item className={`${currentLocation==="/members" || params.id?"activeNavLink":""}`} as={Link} to="/members">General Members</NavDropdown.Item>
             </NavDropdown>
             <Nav.Link as={Link}
             className={`${currentLocation==="/publication"?"activeNavLink":""}`}
@@ -52,10 +53,20 @@ const Header=()=> {
               Publication
             </Nav.Link>
             <Nav.Link as={Link}
+            className={`${currentLocation==="/events-news"?"activeNavLink":""}`}
+             to="/events-news">
+              Events/News
+            </Nav.Link>
+            <Nav.Link as={Link}
+            className={`${currentLocation==="/blogs"?"activeNavLink":""}`}
+             to="/blogs">
+              Blogs
+            </Nav.Link>
+           {/* <Nav.Link as={Link}
             className={`${currentLocation==="/members" || params.id?"activeNavLink":""}`}
              to="/members">
               Members
-            </Nav.Link>
+  </Nav.Link> */}
             {
               userInfo?
               <>

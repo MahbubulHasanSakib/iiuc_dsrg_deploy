@@ -17,6 +17,9 @@ import AdminScreen from "./screens/AdminScreen";
 import EditMemberScreen from "./screens/EditMemberScreen";
 import LoginScreen from "./screens/LoginScreen";
 import MembersListScreen from "./screens/MembersListScreen";
+import ProfileScreen from "./screens/ProfileScreen";
+import EventsAndNewsScreen from "./screens/EventsAndNewsScreen";
+import BlogsScreen from "./screens/BlogsScreen";
 function App() {
   return (
     <div className="App">
@@ -30,12 +33,15 @@ function App() {
       <Route path="/teacher-trainer" element={<ExecutiveScreen />} />
       <Route path="/commitee-members" element={<ExecutiveScreen />} />
       <Route path="/publication"  element={<PublicationScreen />} />
+      <Route path="/events-news"  element={<EventsAndNewsScreen />} />
+      <Route path="/blogs"  element={<BlogsScreen />} />
       <Route path="/members"  element={<MembersScreen />} />
-      <Route path="/members/:name/:id"  element={<MemberDetailsScreen />} />
+      <Route path="/me/:username"  element={<MemberDetailsScreen />} />
       <Route path="/admin"  element={<AdminScreen />} />
       <Route path="/editMember/:id"  element={<EditMemberScreen />} />
       <Route path="/login"  element={<LoginScreen />} />
       <Route path="/membersList"  element={<MembersListScreen />} />
+      <Route path="/profile"  element={<ProfileScreen />} />
     </Routes>
   </BrowserRouter>
     </div>

@@ -35,6 +35,11 @@ email:{
     required:true,
     unique:true
 },
+username:{
+    type:String,
+    required:true,
+    unique:true
+},
 phone:{
     type:String,
     required:true

@@ -17,7 +17,7 @@ const MemberDetailsScreen = () => {
   useEffect(()=>{
     try {
       const getMemberById=async()=>{
-        const response=await axios.get(`/api/members/${params.name}/${params.id}`);
+        const response=await axios.get(`/api/members/${params.username}`);
         setMember(response.data)
        }
        getMemberById()
@@ -32,7 +32,6 @@ const MemberDetailsScreen = () => {
     {
       member?
       <>
-      <h2 className='text-center' style={{padding:"20px 0px",backgroundColor:"#f6f6f6"}}>{member.name}</h2>
        <Container>
        <Resume member={member}/>
        </Container>

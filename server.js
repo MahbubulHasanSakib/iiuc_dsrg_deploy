@@ -37,6 +37,36 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 
+/*app.get('/register',async(req,res)=>{
+    const email="*****"
+    const password="*****"
+    const user=await User.findOne({email});
+    if(user)
+    {
+    
+       return res.status(401).send('This user is already registered');
+    }
+    else{
+  
+    const hashedPassword=await bcrypt.hash(password,10);
+    const newuser=new User({
+    email,
+    password:hashedPassword,
+    isAdmin:true
+    });
+     await newuser.save()
+    .then(async(user)=>{
+        
+        return res.status(200).send(user)
+    })
+    .catch((err)=>{
+        
+        return res.status(401).send('Server error');
+    });
+}
+})*/
+
+
 ///routes
 
 app.post('/login',async(req,res)=>{
@@ -81,10 +111,11 @@ app.get('/api/members',async(req,res)=>{
    }
 })
 
-app.get('/api/members/:name/:id',async(req,res)=>{
+
+app.get('/api/members/:username',async(req,res)=>{
    console.log(req.params)
    try {
-    const member=await Member.findOne({_id:req.params.id,name:req.params.name})
+    const member=await Member.findOne({username:req.params.username})
    if(member)
    return res.status(200).send(member)
    else return res.status(404).send("not found")

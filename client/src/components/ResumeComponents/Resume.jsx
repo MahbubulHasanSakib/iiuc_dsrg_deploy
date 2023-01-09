@@ -8,6 +8,9 @@ import { Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
 import { useAppContext } from '../Context/userContext';
+import BrandImg from '../assets/brandImg.jpg'
+import BackgroundImg from '../assets/BackgroundImg.jpeg'
+import '../css/styles.css'
 
 const Resume = ({member}) => {
   console.log("mem")
@@ -120,7 +123,7 @@ console.log(memberDetails)
         </Modal.Body>
         
       </Modal>
-    <div  className="profile-page">
+   {/* <div  className="profile-page">
   <div  className="wrapper">
     <div  className="page-header page-header-small">
       <div  className="page-header-image" ></div>
@@ -205,7 +208,166 @@ console.log(memberDetails)
 
   </div>
 </div>
+*/}
+<main className="profil_page">
+          <section className="left_box">
+            <div className="profil_info" id="pro_info">
+              <div className="backgound_and_profil">
+                <i className="fa-solid fa-pencil" />
+                <img className="background_img" src={BackgroundImg} alt="#" />
+                <img className="profil_pic" src={memberDetails.profileImg||ProfileImg} alt="#" />
+              </div>
+              <div className="personnal_info_profil">
+                <i className="fa-solid fa-pencil" />
+                <div className="name_and_school">
+                  <h2>{memberDetails.name}</h2>
+                  <p>
+                    <img src={BrandImg} alt="#" />
+                    <span>IIUC Data Science Research Group</span> 
+                  </p>
+                </div>
+            
+                <p>Chittagong,Bangladesh <a href="#">Contact info <br /> <br /></a>
+                </p>
+                <div className="profil_button">
+                  <div className="my_goal">Open to</div>
+                  <div className="new_section"> Add Profile Section</div>
+                  <div className="more">More</div>
+                </div>
+                <div className="profil_blocks" style={{margin:'10px 0px'}}>
+                  
+                </div>
+              </div>
+            </div>
+            <div className="infos" style={{paddingBottom:'10px'}}>
+          <div  className="card-body">
+            <div  className="h4 mt-0 title">Basic Information</div>
+            <div  className="row mt-3">
+              <div  className="col-sm-4"><strong  className="text-uppercase">Email:</strong></div>
+              <div  className="col-sm-8">{memberDetails.email}</div>
+            </div>
+            <div  className="row mt-3">
+              <div  className="col-sm-4"><strong  className="text-uppercase">Phone:</strong></div>
+              <div  className="col-sm-8">{memberDetails.phone}</div>
+              
+            </div>
+            <div  className="row mt-3">
+              <div  className="col-sm-4"><strong  className="text-uppercase">Field of Interest:</strong></div>
+              <div  className="col-sm-8">{memberDetails.field_of_interest}</div>
+            </div>
+         
+          </div>
+        </div>
+            <div className="infos" style={{paddingBottom:'10px'}}>
+              <div className="title"><h4>About</h4><i className="fa-solid fa-pen" /></div>
+              <p>{memberDetails.description}</p>
+            </div>
+            <div className="infos" style={{paddingBottom:'10px'}}>
+     
+              <div className="title"><h4>Experience</h4>
+                     {
+  userData.userInfo.user && (
+    <div className='add-experiance'>
+      <p>Add experience</p>
+      <p><FontAwesomeIcon onClick={handleShow} icon={faPlus}/></p>
+      </div>
+  )
+  }
+                <span className="icons"> 
+                  <i className="fa-solid fa-plus" />
+                  <i className="fa-solid fa-pen" />
+                </span>
+              </div>
 
+              {
+      memberDetails.jobs && memberDetails.jobs.length>0 &&
+      memberDetails.jobs.map(job=>{
+          console.log(job)
+          return (
+            (
+              <>
+                 <p style={{marginBottom:'20px'}}><img src="https://i.f1g.fr/media/eidos/orig/2015/07/20/PHO81b3db84-2ec8-11e5-ad32-1d334e2eca66-805x453.jpg" alt="" />  &nbsp; <span>{job.designation}</span>  <br /> &nbsp;  &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;{job.company}<br /> &nbsp; &nbsp; &nbsp;&nbsp;  &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;{job.startDate} - {job.endDate}<br /></p>
+           {/* <div  className="row">
+              <div  className="col-md-3 job bg-primary" data-aos="fade-right" data-aos-offset="50" data-aos-duration="500">
+                <div  className="card-body cc-experience-header">
+                  <p>{job.startDate} - {job.endDate}</p>
+                  <div  className="h5">{job.company}</div>
+                </div>
+              </div>
+              <div  className="col-md-9 "  data-aos="fade-left" data-aos-offset="50" data-aos-duration="500">
+                <div  className="card-body">
+                  <div  className="h5">{job.designation}</div>
+                  <p>{job.jobDescription}</p>
+                </div>
+              </div>
+            </div> */}
+        </>
+            )
+          )
+        })
+    }
+            
+            </div>
+            <div className="infos" style={{paddingBottom:'10px'}}>
+              <div className="title">
+                <h4>Education</h4>
+                <span className="icons"> 
+                  <i className="fa-solid fa-plus" />
+                  <i className="fa-solid fa-pen" />
+                </span>
+              </div>
+              <p><img src="./css/images/Jiangsu_Normal_University_logo.png" alt="" /><span> International Islamic University Chittagong </span><br />&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;Bachelor of Engineering, Computer Science and Engineering <br />&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;2020 - 2024 <br />&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;Activities at institution :Lead Webmaster at IIUC DSRG</p>
+            </div>
+            <div className="infos" style={{paddingBottom:'10px'}}>
+              <div className="title">
+                <h4>Researches and Publications</h4>
+                <span className="icons"> 
+                  <i className="fa-solid fa-plus" />
+                  <i className="fa-solid fa-pen" />
+                </span>
+              </div>
+              <p><span style={{fontWeight:'bold'}}>Interpretable Machine Learning for COVID-19: An Empirical Study on Severity Prediction Task</span><br />&nbsp;&nbsp; &nbsp; &nbsp;Authors:Han Wu, College of Engineering, Mathematics & Physical Sciences, University of Exeter, 3286 Exeter, United Kingdom of Great Britain and Northern Ireland, EX4 4QJ (e-mail: hw630@exeter.ac.uk)  
+Wenjie Ruan, College of Engineering, Mathematics & Physical Sciences, University of Exeter, 3286 Exeter, United Kingdom of Great Britain and Northern Ireland, (e-mail: W.Ruan@exeter.ac.uk)  
+Jiangtao Wang, Faculty Research Centre for Intelligent Healthcare, Coventry University, 2706 Coventry, West Midlands, United Kingdom of Great Britain and Northern Ireland, (e-mail: jiangtao.wang@coventry.ac.uk)  
+Dingchang Zheng, Faculty Research Centre for Intelligent Healthcare, Coventry University, 2706 Coventry, West Midlands, United Kingdom of Great Britain and Northern Ireland, (e-mail: ad4291@coventry.ac.uk)  
+Bei Liu, Department of Gastroenterology, The 910 Hospital of PLA, Quanzhou, China, (e-mail: liubei0927@outlook.com)</p>
+            </div>
+            <div className="skills">
+              <div className="title">
+                <h4>Skills</h4>
+                <span className="icons double_icons"> 
+                 
+                  <span>
+                    <i className="fa-solid fa-plus" />
+                    <i className="fa-solid fa-pen" />
+                  </span>
+                </span>
+              </div>
+              <h5 className="tech_language">JavaScript</h5>
+              <h5 className="tech_language">css</h5>
+              <h5>Bootstrap</h5>
+            </div>
+            <div className="show_more_res more_skill">
+              <p className="click_more">Show all 32 skills <i className="fa-solid fa-right-long" /></p>
+            </div>
+            <div className="languages">
+              <div className="title">
+                <h4>Languages</h4>
+                <span> <i className="fa-solid fa-plus" /><i className="fa-solid fa-pen" /></span>
+              </div>
+              <div className="language">
+                <h5>Bangla</h5>
+                <p>Native</p>
+              </div>
+              <div className="language">
+                <h5>English</h5>
+                <p>Fluent</p>
+              </div>
+            </div>
+           
+          </section>
+          
+        </main>
    </>
     
   )
