@@ -71,8 +71,7 @@ const Header=()=> {
               userInfo?
               <>
               <NavDropdown 
-             className={`${(currentLocation!=="/about" && currentLocation!=="/publication" 
-             && currentLocation!=="/" && currentLocation!=="/members" && !(params.id))?
+             className={`${(currentLocation!=="/about" && currentLocation!=="/publication" && currentLocation!=="/" && currentLocation!=="/events-news" && currentLocation!=="/blogs" && currentLocation!=="/members" && !(params.id))?
              "activeNavLink":""}`} title="Admin" id="navbarScrollingDropdown">
               <NavDropdown.Item  as={Link} to="/admin">Add Member</NavDropdown.Item>
               <NavDropdown.Item >
