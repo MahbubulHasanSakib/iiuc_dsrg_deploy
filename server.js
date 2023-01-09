@@ -205,6 +205,7 @@ app.post('/api/members',isAuth,async(req,res)=>
         return res.status(200).send({member,success:true})
     })
     .catch(err=>{
+        console.log(err)
         return res.status(500).send({message:'Server error',success:false});
     }); 
 }  
