@@ -182,7 +182,7 @@ app.post('/api/members',isAuth,async(req,res)=>
 {
 
     console.log(req.body)
-   const {name,email,phone,field_of_interest,jobs,description}=req.body;
+   const {username,name,email,phone,field_of_interest,jobs,description}=req.body;
   
     if(!(name==="") && !(email==="") && !(phone==="")){
         const isMemberExist=await Member.findOne({email});
@@ -193,6 +193,7 @@ app.post('/api/members',isAuth,async(req,res)=>
     else{
     //const hashedPassword=await bcrypt.hash(password,10);
     const newMember=new Member({
+    username,
     name,
     email,
     phone,

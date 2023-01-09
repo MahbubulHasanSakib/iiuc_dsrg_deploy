@@ -3,6 +3,7 @@ import { Form } from 'react-bootstrap'
 import axios from 'axios'
 const AddMember = () => {
     const [memberInfo, setMemberInfo] = useState({
+        username:"",
         name:"",
         email: "",
         phone: "",
@@ -72,7 +73,10 @@ const AddMember = () => {
                                   }
 
                                     <div class="col-md-6">
-                                        
+                                        <div class="form-group">
+                                            <input type="text"
+                                                onChange={handleChange} name="username" class="form-control" placeholder="Username" value={memberInfo.username} />
+                                        </div> 
                                         <div class="form-group">
                                             <input type="text"
                                                 onChange={handleChange} name="name" class="form-control" placeholder="Full Name" value={memberInfo.name} />
