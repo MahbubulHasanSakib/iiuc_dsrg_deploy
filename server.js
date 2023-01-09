@@ -82,7 +82,7 @@ app.post('/login',async(req,res)=>{
         const isMatched= await bcrypt.compare(password,user.password);
         if(isMatched)
         {
-            const generatedToken=jwt.sign({id:user._id},"very secret",{
+            const generatedToken=jwt.sign({id:user._id},process.env.JWT_SECRET,{
                 expiresIn:'10d'
             })
             res.json({
