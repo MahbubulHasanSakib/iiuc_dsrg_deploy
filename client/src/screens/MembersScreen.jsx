@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import Header from '../components/CommonComponents/Header'
 import Member from '../components/MembersComponents/Member'
-import Footer from '../components/CommonComponents/Footer'
 import Loader from '../components/CommonComponents/Loader'
 import ScrollToTop from '../components/CommonComponents/ScrollToTop'
 import axios from 'axios'
+import WithLayout from '../Layout/WithLayout'
 const MembersScreen = () => {
   const [members,setMembers]=useState([])
   useEffect(()=>{
@@ -21,8 +20,6 @@ const MembersScreen = () => {
   return (
     <div className='members-screen'>
       <ScrollToTop/>
-    <Header/>
-    
      <h2 className='text-center' style={{padding:"20px 0px",backgroundColor:"#f6f6f6"}}>Members</h2>
     {
       members && members.length>0?
@@ -33,9 +30,9 @@ const MembersScreen = () => {
       }
       </div>:<Loader/>
     }
-    <Footer/>
+
    </div>
   )
 }
 
-export default MembersScreen
+export default WithLayout(MembersScreen)

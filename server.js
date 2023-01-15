@@ -3,6 +3,7 @@ const dotenv=require('dotenv')
 const cors=require('cors')
 const { v4: uuidv4 } = require('uuid')
 const bcrypt=require('bcrypt')
+const cloudinary=require('./utlis/cloudinary')
 const multer=require('multer')
 const mongoose=require('mongoose')
 const Member=require('./models/memberModel')
@@ -10,6 +11,8 @@ const path = require('path');
 const jwt=require('jsonwebtoken')
 const User=require('./models/userModel')
 const {isAuth}=require('./middlewares/authMiddleware')
+const inMemoryStorage=multer.memoryStorage()
+const { Readable } = require('stream');
 const PORT=process.env.port||5000;
 dotenv.config()
 
@@ -25,46 +28,10 @@ app.use(cors())
 app.use(express.static(path.join(__dirname,'/public')));
 app.use(express.static(path.join(__dirname, './client/build')));
 
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null,'public/uploads');
-    },
-    filename: function(req, file, cb) {   
-        cb(null, uuidv4() + '-' + Date.now()+path.extname(file.originalname));
-    }
-});
+const upload = multer({ storage: inMemoryStorage });
 
-const upload = multer({ storage });
-
-
-/*app.get('/register',async(req,res)=>{
-    const email="*****"
-    const password="*****"
-    const user=await User.findOne({email});
-    if(user)
-    {
-    
-       return res.status(401).send('This user is already registered');
-    }
-    else{
-  
-    const hashedPassword=await bcrypt.hash(password,10);
-    const newuser=new User({
-    email,
-    password:hashedPassword,
-    isAdmin:true
-    });
-     await newuser.save()
-    .then(async(user)=>{
-        
-        return res.status(200).send(user)
-    })
-    .catch((err)=>{
-        
-        return res.status(401).send('Server error');
-    });
-}
-})*/
+const DatauriParser=require("datauri/parser");
+const parser = new DatauriParser();
 
 
 ///routes
@@ -131,19 +98,34 @@ app.get('/api/editMember/:id',isAuth,async(req,res)=>{
      .catch(err=>res.status(404).send({message:"member not found",success:false}))
  })
 
- app.put('/api/editMember/:id',upload.single('image'),isAuth,async(req,res)=>{
-    
-    console.log(req.body)
-    console.log(req.file)
+ app.put('/api/editMember/:id',isAuth,upload.single('image'),async(req,res)=>{
+   
 
     try{
         const member=await Member.findById(req.params.id)
         if(member)
         {
             const {name,email,phone,field_of_interest,description}=req.body;
+            console.log("tes")
+            console.log(req.file)
+
             let imagePath='';
-            if (req.file)
-             imagePath = String('/' + req.file.destination.split('/').slice(1) + '/' + req.file.filename);
+            if (req.file){
+                const extName = path.extname(req.file.originalname).toString();
+                const file64 = parser.format(extName, req.file.buffer);
+                const result = await cloudinary.uploader.upload(file64.content,{
+                    uploads: "products",
+                    // width: 300,
+                    // crop: "scale"
+                    public_id: `${Date.now()}`,
+                    resource_type: "auto",
+                })
+                console.log("ress")
+                console.log(result)
+               // imagePath = String('/' + req.file.destination.split('/').slice(1) + '/' + req.file.filename);
+               imagePath=result.secure_url;
+            }
+    
             else  imagePath = member.profileImg
 
             if(!(name==="") && !(email==="") && !(phone==="")){

@@ -1,14 +1,12 @@
 import React from 'react'
-import Header from '../components/CommonComponents/Header'
-import Footer from '../components/CommonComponents/Footer'
 import ProfileImg from '../components/assets/profileImg.jpg'
 import BrandImg from '../components/assets/brandImg.jpg'
 import BackgroundImg from '../components/assets/BackgroundImg.jpeg'
 import './css/styles.css'
+import WithLayout from '../Layout/WithLayout'
 const ProfileScreen = () => {
   return (
     <>
-       <Header/>
  <div>
      
         <main className="profil_page">
@@ -104,9 +102,8 @@ const ProfileScreen = () => {
           
         </main>
       </div>
-      <Footer />
     </>
   )
 }
 
-export default ProfileScreen
+export default WithLayout(ProfileScreen)

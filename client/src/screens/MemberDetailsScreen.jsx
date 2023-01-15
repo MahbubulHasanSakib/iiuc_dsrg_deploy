@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import ProfileImg from '../components/assets/profileImg.jpg'
-import Header from '../components/CommonComponents/Header'
-import Footer from '../components/CommonComponents/Footer'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPhone,faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 import Loader from '../components/CommonComponents/Loader'
 import Resume from '../components/ResumeComponents/Resume'
 import { Container } from 'react-bootstrap'
+import WithLayout from '../Layout/WithLayout'
 const MemberDetailsScreen = () => {
   const [member,setMember]=useState()
   const params=useParams()
@@ -28,7 +27,6 @@ const MemberDetailsScreen = () => {
   
   return (
     <>
-    <Header/>
     {
       member?
       <>
@@ -37,9 +35,8 @@ const MemberDetailsScreen = () => {
        </Container>
       </>:<Loader/>
     }
-    <Footer/>
    </>
   )
 }
 
-export default MemberDetailsScreen
+export default WithLayout(MemberDetailsScreen)
