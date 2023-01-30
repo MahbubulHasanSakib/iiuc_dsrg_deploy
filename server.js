@@ -10,6 +10,7 @@ const Member=require('./models/memberModel')
 const path = require('path');
 const jwt=require('jsonwebtoken')
 const User=require('./models/userModel')
+const Committee=require('./models/committeeModel')
 const {isAuth}=require('./middlewares/authMiddleware')
 const inMemoryStorage=multer.memoryStorage()
 const { Readable } = require('stream');
@@ -78,6 +79,15 @@ app.get('/api/members',async(req,res)=>{
    }
 })
 
+app.get('/api/committee',async(req,res)=>{
+    try{
+     const committeMembers=await Committee.find({})
+     return res.status(200).send(committeMembers)
+        }
+        catch(error){
+           return res.status(401).send('committee members not found')
+        }
+})
 
 app.get('/api/members/:username',async(req,res)=>{
    console.log(req.params)
@@ -199,6 +209,7 @@ app.post('/api/members',isAuth,async(req,res)=>
 })
 
 
+
 app.put('/api/jobs/:id',isAuth,async(req,res)=>
 {
 
@@ -240,6 +251,7 @@ app.get('/api/deleteMember/:id',isAuth,async(req,res)=>{
            return res.status(401).send('User not found')
         }
 })
+
 
 
 
