@@ -38,13 +38,15 @@ const parser = new DatauriParser();
 
 ///routes
 
+
 app.post('/login',async(req,res)=>{
-   const {email,password}=req.body;
+   const {username,password}=req.body;
     
-    const user=await User.findOne({email});
+    const user=await User.findOne({username});
+    console.log(user)
     if(!user)
     {
-        res.status(401).send('This email is not registered');
+        res.status(401).send('This user is not registered');
     }
     else
     {
@@ -56,8 +58,7 @@ app.post('/login',async(req,res)=>{
             })
             res.json({
               _id:user._id,
-              name:user.name,
-              email:user.email,
+              username:user.username,
               isAdmin:user.isAdmin,
               token:generatedToken
             })
@@ -70,6 +71,33 @@ app.post('/login',async(req,res)=>{
 
 
 }) 
+
+app.post('/register',async(req,res)=>{
+   
+        const {username,password}=req.body;
+      
+        const user=await User.findOne({username});
+        if(user)
+        {
+           return res.status(401).send('This user is already registered');
+        }
+        else{
+        const hashedPassword=await bcrypt.hash(password,10);
+        const newuser=new User({
+        username,
+        password:hashedPassword,
+        isAdmin:false
+        });
+         await newuser.save()
+        .then(user=>{
+            return res.send(user)
+        })
+        .catch(err=>{
+            return res.status(401).send('Server error');
+        });
+    }
+    
+})
 
 app.get('/api/members',async(req,res)=>{
    try {
