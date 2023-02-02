@@ -11,7 +11,8 @@ const path = require('path');
 const jwt=require('jsonwebtoken')
 const User=require('./models/userModel')
 const Committee=require('./models/committeeModel')
-const {isAuth}=require('./middlewares/authMiddleware')
+const Event=require('./models/eventModel')
+const {isAuth,isAdmin}=require('./middlewares/authMiddleware')
 const inMemoryStorage=multer.memoryStorage()
 const { Readable } = require('stream');
 const PORT=process.env.port||5000;
@@ -89,8 +90,27 @@ app.get('/api/committee',async(req,res)=>{
         }
 })
 
+app.get('/api/events',async(req,res)=>{
+    try{
+     const events=await Event.find({})
+     return res.status(200).send(events)
+        }
+        catch(error){
+           return res.status(401).send('Error in fetching events')
+        }
+})
+app.get('/api/events/:id',async(req,res)=>{
+    try{
+     const event=await Event.findById(req.params.id)
+     return res.status(200).send(event)
+        }
+        catch(error){
+           return res.status(401).send('Error in fetching event')
+        }
+})
+
 app.get('/api/members/:username',async(req,res)=>{
-   console.log(req.params)
+  
    try {
     const member=await Member.findOne({username:req.params.username})
    if(member)
@@ -102,10 +122,57 @@ app.get('/api/members/:username',async(req,res)=>{
 })
 
 app.get('/api/editMember/:id',isAuth,async(req,res)=>{
-    console.log(req.params)
+    
      await Member.findOne({_id:req.params.id})
      .then(member=>res.status(200).send({member,success:true}))
      .catch(err=>res.status(404).send({message:"member not found",success:false}))
+ })
+
+ app.post('/api/events',isAuth,isAdmin,upload.single('event_image'),async(req,res)=>{
+
+   console.log(req.body)
+   console.log(req.file)
+   
+   const currentDate = new Date();
+const year = currentDate.getFullYear();
+const month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+const day = ('0' + currentDate.getDate()).slice(-2);
+const hours = ('0' + currentDate.getHours()).slice(-2);
+const minutes = ('0' + currentDate.getMinutes()).slice(-2);
+const dateString = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+   let imagePath='';
+            if (req.file){
+                const extName = path.extname(req.file.originalname).toString();
+                const file64 = parser.format(extName, req.file.buffer);
+                const result = await cloudinary.uploader.upload(file64.content,{
+                    uploads: "products",
+                    // width: 300,
+                    // crop: "scale"
+                    public_id: `${Date.now()}`,
+                    resource_type: "auto",
+                })
+               // console.log("ress")
+               // console.log(result)
+               // imagePath = String('/' + req.file.destination.split('/').slice(1) + '/' + req.file.filename);
+               imagePath=result.secure_url;
+            }
+
+   const {title,description}=req.body
+   const newEvent=new Event({
+    image:imagePath,
+    title,
+    description,
+    date:dateString
+    });
+     await newEvent.save()
+    .then(event=>{
+        return res.status(200).send({event,success:true})
+    })
+    .catch(err=>{
+        console.log(err)
+        return res.status(500).send({message:'Server error',success:false});
+    }); 
  })
 
  app.put('/api/editMember/:id',isAuth,upload.single('image'),async(req,res)=>{
