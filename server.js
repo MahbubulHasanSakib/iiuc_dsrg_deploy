@@ -203,7 +203,7 @@ const dateString = `${year}-${month}-${day}T${hours}:${minutes}`;
     }); 
  })
 
- app.put('/api/editMember/:id',isAuth,upload.single('image'),async(req,res)=>{
+ app.put('/api/editMember/:id',isAuth,isAdmin,upload.single('image'),async(req,res)=>{
    
 
     try{
@@ -265,7 +265,7 @@ const dateString = `${year}-${month}-${day}T${hours}:${minutes}`;
  })
 
 
-app.post('/api/members',isAuth,async(req,res)=>
+app.post('/api/members',isAuth,isAdmin,async(req,res)=>
 {
 
     console.log(req.body)
@@ -305,7 +305,7 @@ app.post('/api/members',isAuth,async(req,res)=>
 
 
 
-app.put('/api/jobs/:id',isAuth,async(req,res)=>
+app.put('/api/jobs/:id',isAuth,isAdmin,async(req,res)=>
 {
 
     console.log(req.body)
@@ -337,7 +337,7 @@ catch(error){
 })
 
 
-app.get('/api/deleteMember/:id',isAuth,async(req,res)=>{
+app.get('/api/deleteMember/:id',isAuth,isAdmin,async(req,res)=>{
     try{
         const deletedMember=await Member.findByIdAndRemove(req.params.id)
        return res.status(200).send(deletedMember)
