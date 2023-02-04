@@ -305,7 +305,7 @@ app.post('/api/members',isAuth,isAdmin,async(req,res)=>
 
 
 
-app.put('/api/jobs/:id',isAuth,isAdmin,async(req,res)=>
+app.put('/api/jobs/:id',isAuth,async(req,res)=>
 {
 
     console.log(req.body)
