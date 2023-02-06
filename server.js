@@ -12,6 +12,7 @@ const jwt=require('jsonwebtoken')
 const User=require('./models/userModel')
 const Committee=require('./models/committeeModel')
 const Event=require('./models/eventModel')
+const Blog=require('./models/blogModel')
 const {isAuth,isAdmin}=require('./middlewares/authMiddleware')
 const inMemoryStorage=multer.memoryStorage()
 const { Readable } = require('stream');
@@ -124,6 +125,16 @@ app.get('/api/events',async(req,res)=>{
         }
         catch(error){
            return res.status(401).send('Error in fetching events')
+        }
+})
+
+app.get('/api/blogs',async(req,res)=>{
+    try{
+     const blogs=await Blog.find({})
+     return res.status(200).send(blogs)
+        }
+        catch(error){
+           return res.status(401).send('Error in fetching blogs')
         }
 })
 
@@ -243,6 +254,16 @@ app.get('/api/events/:id',async(req,res)=>{
         }
 })
 
+app.get('/api/blogs/:id',async(req,res)=>{
+    try{
+     const blog=await Blog.findById(req.params.id)
+     return res.status(200).send(blog)
+        }
+        catch(error){
+           return res.status(401).send('Error in fetching blog')
+        }
+})
+
 app.get('/api/members/:username',async(req,res)=>{
   
    try {
@@ -303,6 +324,49 @@ const dateString = `${year}-${month}-${day}T${hours}:${minutes}`;
         return res.status(500).send({message:'Server error',success:false});
     }); 
  })
+
+ app.post('/api/blogs',isAuth,upload.single('blog_image'),async(req,res)=>{
+
+   
+    const currentDate = new Date();
+ const year = currentDate.getFullYear();
+ const month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+ const day = ('0' + currentDate.getDate()).slice(-2);
+ const hours = ('0' + currentDate.getHours()).slice(-2);
+ const minutes = ('0' + currentDate.getMinutes()).slice(-2);
+ const dateString = `${year}-${month}-${day}T${hours}:${minutes}`;
+ 
+    let imagePath='';
+             if (req.file){
+                 const extName = path.extname(req.file.originalname).toString();
+                 const file64 = parser.format(extName, req.file.buffer);
+                 const result = await cloudinary.uploader.upload(file64.content,{
+                     uploads: "products",
+                     // width: 300,
+                     // crop: "scale"
+                     public_id: `${Date.now()}`,
+                     resource_type: "auto",
+                 })
+                imagePath=result.secure_url;
+             }
+ 
+    const {username,title,description}=req.body
+    const newBlog=new Blog({
+     username,
+     image:imagePath,
+     title,
+     description,
+     date:dateString
+     });
+      await newBlog.save()
+     .then(blog=>{
+         return res.status(200).send({blog,success:true})
+     })
+     .catch(err=>{
+         console.log(err)
+         return res.status(500).send({message:'Server error',success:false});
+     }); 
+  })
 
  app.put('/api/editMember/:id',isAuth,isAdmin,upload.single('image'),async(req,res)=>{
    
