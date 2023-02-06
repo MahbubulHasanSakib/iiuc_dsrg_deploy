@@ -22,6 +22,13 @@ const jobSchema = new Schema(
     }
 )
 
+const publicationSchema = new Schema(
+    {
+        paper_name:{type:String},
+        authors:{type:String}
+    }
+)
+
 const memberSchema=new Schema({
 profileImg:{
         type:String
@@ -56,7 +63,9 @@ jobs:[jobSchema],
 isAdmin:{
     type:Boolean,
     default:false
-}
+},
+reseachers_and_publications:[publicationSchema],
+skills:[String],
 },{timestamps:true})
 
 const Member=mongoose.model('member',memberSchema)

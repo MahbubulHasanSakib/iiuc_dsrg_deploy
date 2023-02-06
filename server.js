@@ -43,7 +43,6 @@ app.post('/login',async(req,res)=>{
    const {username,password}=req.body;
     
     const user=await User.findOne({username});
-    console.log(user)
     if(!user)
     {
         res.status(401).send('This user is not registered');
@@ -127,6 +126,113 @@ app.get('/api/events',async(req,res)=>{
            return res.status(401).send('Error in fetching events')
         }
 })
+
+app.post('/api/publications/:username',isAuth,async(req,res)=>{
+    try {
+        const {pname,authors}=req.body;
+        const member=await Member.findOne({username:req.params.username})
+        if(member){
+        const tempPubs=member.reseachers_and_publications;
+        tempPubs.push({
+            paper_name:pname,
+            authors:authors
+        })
+        member.reseachers_and_publications=tempPubs;
+
+    await member.save()
+    .then(m=>{
+        return res.status(200).send({member:m,success:true})
+    })
+    .catch(err=>{
+        console.log(err)
+        return res.status(500).send({message:'Server error',success:false});
+    }); }
+    else return res.status(404).send("not found")
+    } catch (error) {
+     return res.status(401).json({message:error})
+    }
+ })
+
+ app.put('/api/changePassword',isAuth,async(req,res)=>{
+   User.findById(req.user._id, async (err, user) => {
+        if (err || !user) {
+            return res.status(401).send('user not found');
+        }
+    
+        // Check if the current password is correct
+        if (! await bcrypt.compare(req.body.currentPassword, user.password)) {
+            return res.status(401).send('Incorrect Current Password');
+        }
+    
+        // Hash the new password
+        const hash = await bcrypt.hash(req.body.newPassword, 10);
+    
+        // Update the user document with the new password
+        user.password = hash;
+       await user.save((err, updatedUser) => {
+          if (err) {
+            return res.status(400).send('Failed to update password');
+          }
+          const generatedToken=jwt.sign({id:updatedUser._id},process.env.JWT_SECRET,{
+            expiresIn:'10d'
+        })
+       return res.json({
+          _id:updatedUser._id,
+          username:updatedUser.username,
+          isAdmin:updatedUser.isAdmin,
+          token:generatedToken
+        })
+        });
+      });
+
+ })
+ app.post('/api/skills/:username',isAuth,async(req,res)=>{
+    try {
+        const {skills}=req.body;
+        const member=await Member.findOne({username:req.params.username})
+        if(member){
+        const tempSkills=member.skills;
+        let newArray = [];
+        let elements = skills.split(",");
+
+          for (let i = 0; i < elements.length; i++) {
+         newArray.push(elements[i]);
+         }
+
+
+let mergedArray = [];
+
+for (let i = 0; i < tempSkills.length; i++) {
+  if (!mergedArray.includes(tempSkills[i])) {
+    mergedArray.push(tempSkills[i]);
+  }
+}
+
+for (let i = 0; i < newArray.length; i++) {
+  if (!mergedArray.includes(newArray[i])) {
+    mergedArray.push(newArray[i]);
+  }
+}
+
+
+
+
+        member.skills=mergedArray;
+
+    await member.save()
+    .then(m=>{
+        return res.status(200).send({member:m,success:true})
+    })
+    .catch(err=>{
+        console.log(err)
+        return res.status(500).send({message:'Server error',success:false});
+    }); }
+    else return res.status(404).send("not found")
+    } catch (error) {
+     return res.status(401).json({message:error})
+    }
+ })
+
 app.get('/api/events/:id',async(req,res)=>{
     try{
      const event=await Event.findById(req.params.id)
@@ -158,8 +264,6 @@ app.get('/api/editMember/:id',isAuth,async(req,res)=>{
 
  app.post('/api/events',isAuth,isAdmin,upload.single('event_image'),async(req,res)=>{
 
-   console.log(req.body)
-   console.log(req.file)
    
    const currentDate = new Date();
 const year = currentDate.getFullYear();
@@ -180,9 +284,6 @@ const dateString = `${year}-${month}-${day}T${hours}:${minutes}`;
                     public_id: `${Date.now()}`,
                     resource_type: "auto",
                 })
-               // console.log("ress")
-               // console.log(result)
-               // imagePath = String('/' + req.file.destination.split('/').slice(1) + '/' + req.file.filename);
                imagePath=result.secure_url;
             }
 
@@ -211,9 +312,7 @@ const dateString = `${year}-${month}-${day}T${hours}:${minutes}`;
         if(member)
         {
             const {name,email,phone,field_of_interest,description}=req.body;
-            console.log("tes")
-            console.log(req.file)
-
+            
             let imagePath='';
             if (req.file){
                 const extName = path.extname(req.file.originalname).toString();
@@ -225,8 +324,7 @@ const dateString = `${year}-${month}-${day}T${hours}:${minutes}`;
                     public_id: `${Date.now()}`,
                     resource_type: "auto",
                 })
-                console.log("ress")
-                console.log(result)
+                
                // imagePath = String('/' + req.file.destination.split('/').slice(1) + '/' + req.file.filename);
                imagePath=result.secure_url;
             }
@@ -268,7 +366,6 @@ const dateString = `${year}-${month}-${day}T${hours}:${minutes}`;
 app.post('/api/members',isAuth,isAdmin,async(req,res)=>
 {
 
-    console.log(req.body)
    const {username,name,email,phone,field_of_interest,jobs,description}=req.body;
   
     if(!(name==="") && !(email==="") && !(phone==="")){
@@ -308,9 +405,6 @@ app.post('/api/members',isAuth,isAdmin,async(req,res)=>
 app.put('/api/jobs/:id',isAuth,async(req,res)=>
 {
 
-    console.log(req.body)
-   
-  
    try{
     const member=await Member.findById(req.params.id)
     if(member)
@@ -320,8 +414,6 @@ app.put('/api/jobs/:id',isAuth,async(req,res)=>
         tempJobs.push({...req.body});
         member.jobs=tempJobs;
         const updatedMember=await member.save();
-        console.log("updated")
-        console.log(updatedMember)
         return res.status(200).send({member:updatedMember,success:true})
     
     }
