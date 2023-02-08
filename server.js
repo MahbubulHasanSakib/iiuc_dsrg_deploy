@@ -12,6 +12,7 @@ const jwt=require('jsonwebtoken')
 const User=require('./models/userModel')
 const Committee=require('./models/committeeModel')
 const Event=require('./models/eventModel')
+const DsrgEvent=require('./models/dsrgEventModel')
 const Blog=require('./models/blogModel')
 const {isAuth,isAdmin}=require('./middlewares/authMiddleware')
 const inMemoryStorage=multer.memoryStorage()
@@ -120,7 +121,9 @@ app.get('/api/committee',async(req,res)=>{
 
 app.get('/api/events',async(req,res)=>{
     try{
-     const events=await Event.find({})
+    // const events=await Event.find({})
+    const events=await DsrgEvent.find({})
+    
      return res.status(200).send(events)
         }
         catch(error){
@@ -246,7 +249,9 @@ for (let i = 0; i < newArray.length; i++) {
 
 app.get('/api/events/:id',async(req,res)=>{
     try{
-     const event=await Event.findById(req.params.id)
+    // const event=await Event.findById(req.params.id)
+     
+     const event=await DsrgEvent.findById(req.params.id)
      return res.status(200).send(event)
         }
         catch(error){
@@ -283,33 +288,60 @@ app.get('/api/editMember/:id',isAuth,async(req,res)=>{
      .catch(err=>res.status(404).send({message:"member not found",success:false}))
  })
 
- app.post('/api/events',isAuth,isAdmin,upload.single('event_image'),async(req,res)=>{
+ app.post('/api/events',isAuth,isAdmin,upload.array('event_image'),async(req,res)=>{
 
-   
-   const currentDate = new Date();
+  /*
+    console.log("start")
+  const currentDate = new Date();
 const year = currentDate.getFullYear();
 const month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
 const day = ('0' + currentDate.getDate()).slice(-2);
 const hours = ('0' + currentDate.getHours()).slice(-2);
 const minutes = ('0' + currentDate.getMinutes()).slice(-2);
-const dateString = `${year}-${month}-${day}T${hours}:${minutes}`;
+const dateString = `${year}-${month}-${day}T${hours}:${minutes}`; */
 
-   let imagePath='';
-            if (req.file){
-                const extName = path.extname(req.file.originalname).toString();
-                const file64 = parser.format(extName, req.file.buffer);
-                const result = await cloudinary.uploader.upload(file64.content,{
-                    uploads: "products",
-                    // width: 300,
-                    // crop: "scale"
-                    public_id: `${Date.now()}`,
-                    resource_type: "auto",
+   //let imagePath='';
+  /* const imagePath=[]
+            if (req.files){
+                req.files.map((file)=>{
+                   const upload_image=async()=>
+                   {
+                    console.log("from fun")
+                    console.log(file)
+                    const extName = path.extname(file.originalname).toString();
+                    const file64 = parser.format(extName,file.buffer);
+                   // console.log("test from up")
+                   // console.log(extName)
+                   // console.log(file64)
+                   try {
+                    const result = await cloudinary.uploader.upload(file64.content,{
+                        uploads: "products",
+                        // width: 300,
+                        // crop: "scale"
+                        public_id: `${Date.now()}`,
+                        resource_type: "auto",
+                    })
+                    //console.log("test from cloud")
+                    console.log("secure url")
+                    console.log(result.secure_url)
+                    imagePath.push(result.secure_url)
+                   } catch (error) {
+                    console.log("up error")
+                    console.log(error)
+                   }
+                   
+                   //imagePath=result.secure_url;
+                  // 
+                   }
+                   upload_image()
                 })
-               imagePath=result.secure_url;
+               
             }
-
+    console.log("imagePath")
+   console.log(imagePath)
    const {title,description}=req.body
-   const newEvent=new Event({
+  // const newEvent=new Event({
+    const newEvent=new DsrgEvent({
     image:imagePath,
     title,
     description,
@@ -323,19 +355,67 @@ const dateString = `${year}-${month}-${day}T${hours}:${minutes}`;
         console.log(err)
         return res.status(500).send({message:'Server error',success:false});
     }); 
+    console.log("ok")
+    console.log(req.file)
+    console.log(req.files)*/
+
+    try {
+        const results = await Promise.all(
+          req.files.map(async file => {
+            const extName = path.extname(file.originalname).toString();
+            const file64 = parser.format(extName,file.buffer);
+            const result = await cloudinary.uploader.upload(file64.content,{
+                uploads: "products",
+                public_id: `${Date.now()}`,
+                resource_type: "image",
+                timeOut:120000
+            })
+            return result;
+          })
+        );
+       // res.send(results);
+     
+       const imagePath=[]
+       results.map((rs)=>imagePath.push(rs.secure_url))
+
+    
+       const {title,description}=req.body
+      // const newEvent=new Event({
+        const newEvent=new DsrgEvent({
+        image:imagePath,
+        title,
+        description,
+        date:new Date().toISOString()
+        });
+         await newEvent.save()
+        .then(event=>{
+            return res.status(200).send({event,success:true})
+        })
+        .catch(err=>{
+            console.log(err)
+            return res.status(500).send({message:'Server error',success:false});
+        }); 
+
+      } catch (error) {
+       
+        console.log(error)
+        res.status(500).send(error);
+      }
+
+  
  })
 
  app.post('/api/blogs',isAuth,upload.single('blog_image'),async(req,res)=>{
 
    
-    const currentDate = new Date();
+    /*const currentDate = new Date();
  const year = currentDate.getFullYear();
  const month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
  const day = ('0' + currentDate.getDate()).slice(-2);
  const hours = ('0' + currentDate.getHours()).slice(-2);
  const minutes = ('0' + currentDate.getMinutes()).slice(-2);
  const dateString = `${year}-${month}-${day}T${hours}:${minutes}`;
- 
+ */
     let imagePath='';
              if (req.file){
                  const extName = path.extname(req.file.originalname).toString();
@@ -356,7 +436,7 @@ const dateString = `${year}-${month}-${day}T${hours}:${minutes}`;
      image:imagePath,
      title,
      description,
-     date:dateString
+     date:new Date().toISOString()
      });
       await newBlog.save()
      .then(blog=>{
