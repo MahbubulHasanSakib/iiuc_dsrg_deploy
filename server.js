@@ -430,9 +430,10 @@ const dateString = `${year}-${month}-${day}T${hours}:${minutes}`; */
                 imagePath=result.secure_url;
              }
  
-    const {username,title,description}=req.body
+    const {username,title,description,name}=req.body
     const newBlog=new Blog({
      username,
+     name,
      image:imagePath,
      title,
      description,

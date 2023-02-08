@@ -6,6 +6,9 @@ const blogSchema=new Schema({
 username:{
         type:String
 },
+name:{
+    type:String
+},
 image:{
     type:String,
 },
