@@ -14,6 +14,7 @@ const Committee=require('./models/committeeModel')
 const Event=require('./models/eventModel')
 const DsrgEvent=require('./models/dsrgEventModel')
 const Blog=require('./models/blogModel')
+const Faculty=require('./models/facultyModel')
 const {isAuth,isAdmin}=require('./middlewares/authMiddleware')
 const inMemoryStorage=multer.memoryStorage()
 const { Readable } = require('stream');
@@ -117,6 +118,55 @@ app.get('/api/committee',async(req,res)=>{
         catch(error){
            return res.status(401).send('committee members not found')
         }
+})
+
+app.get('/api/faculties',async(req,res)=>{
+    try{
+     const faculties=await Faculty.find({})
+     return res.status(200).send(faculties)
+        }
+        catch(error){
+           return res.status(401).send('error in fecthing faculties')
+        }
+})
+
+
+
+app.post('/api/faculties',isAuth,isAdmin,async(req,res)=>
+{
+
+   const {username,name,teaching_designation,dept,section,session}=req.body;
+  
+    if(!(username==="") && !(name==="") && !(teaching_designation==="") && !(dept==="")
+    &&  !(session==="")){
+        const isMemberExist=await Faculty.findOne({username});
+    if(isMemberExist)
+    {
+       return res.status(401).send({message:'This user is already registered',success:false});
+    }
+    else{
+    //const hashedPassword=await bcrypt.hash(password,10);
+    const newFaculty=new Faculty({
+    username,
+    name,
+    teaching_designation,
+    dept,
+    section:"faculty_members",
+    session
+    });
+     await newFaculty.save()
+    .then(faculty=>{
+        return res.status(200).send({faculty,success:true})
+    })
+    .catch(err=>{
+        console.log(err)
+        return res.status(500).send({message:'Server error',success:false});
+    }); 
+}  
+    }
+    else{
+        return res.status(401).send({message:'* fields are required',success:false});
+    }
 })
 
 app.get('/api/events',async(req,res)=>{
@@ -287,6 +337,13 @@ app.get('/api/editMember/:id',isAuth,async(req,res)=>{
      .then(member=>res.status(200).send({member,success:true}))
      .catch(err=>res.status(404).send({message:"member not found",success:false}))
  })
+
+ app.get('/api/editFaculty/:id',isAuth,async(req,res)=>{
+    
+    await Faculty.findOne({_id:req.params.id})
+    .then(member=>res.status(200).send({member,success:true}))
+    .catch(err=>res.status(404).send({message:"member not found",success:false}))
+})
 
  app.post('/api/events',isAuth,isAdmin,upload.array('event_image'),async(req,res)=>{
 
@@ -508,6 +565,68 @@ const dateString = `${year}-${month}-${day}T${hours}:${minutes}`; */
  })
 
 
+
+ app.put('/api/editFaculty/:id',isAuth,isAdmin,upload.single('image'),async(req,res)=>{
+   
+
+    try{
+        const faculty=await Faculty.findById(req.params.id)
+        if(faculty)
+        {
+            const {username,name,teaching_designation,dept,section,session}=req.body;
+            
+            let imagePath='';
+            if (req.file){
+                const extName = path.extname(req.file.originalname).toString();
+                const file64 = parser.format(extName, req.file.buffer);
+                const result = await cloudinary.uploader.upload(file64.content,{
+                    uploads: "products",
+                    // width: 300,
+                    // crop: "scale"
+                    public_id: `${Date.now()}`,
+                    resource_type: "auto",
+                })
+                
+               // imagePath = String('/' + req.file.destination.split('/').slice(1) + '/' + req.file.filename);
+               imagePath=result.secure_url;
+            }
+    
+            else  imagePath = faculty.image
+
+            if(!(username==="") && !(name==="") && !(teaching_designation==="") && !(dept==="")
+            && !(section==="") && !(session==="")){
+                const isMemberExist=await Faculty.findOne({username});
+            if(!isMemberExist)
+            {
+               return res.status(401).send({message:'This user is not registered',success:false});
+            }
+            else{
+            //faculty.username=req.body.username||faculty.username
+            faculty.name=req.body.name||faculty.name
+            faculty.image = imagePath
+            faculty.teaching_designation=req.body.teaching_designation||faculty.teaching_designation
+            faculty.dept=req.body.dept||faculty.dept
+            faculty.section=req.body.section||faculty.section
+            faculty.session=req.body.session||faculty.session
+            const updatedFaculty=await faculty.save();
+            return res.status(200).send({member:updatedFaculty,success:true})
+            }
+        }
+        else{
+            return res.status(401).send({message:'* fields are required',success:false});
+        }
+        }
+        else{
+            return res.status(401).send({message:'Member not found',success:false});
+        }
+    }
+    catch(error){
+        console.log(error)
+        return res.status(500).send({message:'Server error',success:false});
+    }  
+ })
+
+
 app.post('/api/members',isAuth,isAdmin,async(req,res)=>
 {
 
@@ -584,7 +703,15 @@ app.get('/api/deleteMember/:id',isAuth,isAdmin,async(req,res)=>{
         }
 })
 
-
+app.get('/api/deleteFaculty/:id',isAuth,isAdmin,async(req,res)=>{
+    try{
+        const deletedFaculty=await Faculty.findByIdAndRemove(req.params.id)
+       return res.status(200).send(deletedFaculty)
+        }
+        catch(error){
+           return res.status(401).send('Faculty not found')
+        }
+})
 
 
 app.get("*", function (req,res) {
