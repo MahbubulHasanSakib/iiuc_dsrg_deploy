@@ -161,6 +161,12 @@ app.post('/login',async(req,res)=>{
       res.send("ok")
 })
 */
+
+
+app.get('/getAutoPasswords',isAuth,isAdmin,async(req,res)=>{
+     const getAllAutoPass=await AutoPassword.find({})
+     res.status(200).send(getAllAutoPass)
+})
 app.post('/register',async(req,res)=>{
    
         const {username,password}=req.body;
