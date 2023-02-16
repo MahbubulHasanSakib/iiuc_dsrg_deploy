@@ -424,14 +424,14 @@ app.get('/api/members/:username',async(req,res)=>{
    }
 })
 
-app.get('/api/editMember/:id',isAuth,async(req,res)=>{
+app.get('/api/editMember/:id',isAuth,isAdmin,async(req,res)=>{
     
      await Member.findOne({_id:req.params.id})
      .then(member=>res.status(200).send({member,success:true}))
      .catch(err=>res.status(404).send({message:"member not found",success:false}))
  })
 
- app.get('/api/editFaculty/:id',isAuth,async(req,res)=>{
+ app.get('/api/editFaculty/:id',isAuth,isAdmin,async(req,res)=>{
     
     await Faculty.findOne({_id:req.params.id})
     .then(member=>res.status(200).send({member,success:true}))
