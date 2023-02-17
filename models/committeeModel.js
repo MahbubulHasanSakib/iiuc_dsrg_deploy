@@ -19,6 +19,10 @@ section:{
     type:String,
     //required:true
 },
+section_order:{
+    type:Number
+    //required:true
+},
 session:{
     type:String,
     //required:true
