@@ -213,9 +213,20 @@ app.get('/api/committee',async(req,res)=>{
         }
 })
 
+
+async function getDataSortedBySerial() {
+    try {
+      const sortedData = await Faculty.find().sort({ faculty_order: 1 });
+      return sortedData;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  }
+
 app.get('/api/faculties',async(req,res)=>{
     try{
-     const faculties=await Faculty.find({})
+     const faculties= await getDataSortedBySerial();
      return res.status(200).send(faculties)
         }
         catch(error){
