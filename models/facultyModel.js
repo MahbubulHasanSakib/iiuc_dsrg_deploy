@@ -15,6 +15,9 @@ teaching_designation:{
     type:String,
     //required:true
 },
+faculty_order:{
+    type:Number
+},
 dept:{
     type:String,
     //required:true
