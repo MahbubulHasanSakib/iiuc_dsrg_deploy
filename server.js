@@ -42,6 +42,31 @@ const parser = new DatauriParser();
 
 ///routes
 
+const authenticateJWT = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (authHeader) {
+    const token = authHeader.split(' ')[1];
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+      if (err) {
+        return res.status(403).send({success:false,message:"not valid token"});
+      }
+
+      req.user = user;
+      next();
+    });
+  } else {
+    return res.status(401).send({success:false,message:"not valid token"});
+  }
+};
+
+// Define a route to check if a JWT is valid
+app.get('/api/checkjwt', authenticateJWT, (req, res) => {
+  return res.json({ success:true,message: 'JWT is valid' });
+});
+
+
 
 app.post('/login',async(req,res)=>{
    const {username,password}=req.body;
@@ -57,7 +82,7 @@ app.post('/login',async(req,res)=>{
         if(isMatched)
         {
             const generatedToken=jwt.sign({id:user._id},process.env.JWT_SECRET,{
-                expiresIn:'10d'
+                expiresIn:'2h'
             })
             res.json({
               _id:user._id,
