@@ -104,8 +104,9 @@ app.post('/login',async(req,res)=>{
 
 
 app.get('/getAutoPasswords',isAuth,isAdmin,async(req,res)=>{
-     const getAllAutoPass=await AutoPassword.find({})
-     res.status(200).send(getAllAutoPass)
+     const getAllAutoPass=await AutoPassword.find({}).sort({ uname: 1 })
+     const getAllMembers=await Member.find({}).sort({ username: 1 })
+     res.status(200).send({getAllAutoPass,getAllMembers})
 })
 app.post('/register',async(req,res)=>{
    
