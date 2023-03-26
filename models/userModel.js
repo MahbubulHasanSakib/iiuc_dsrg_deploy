@@ -8,6 +8,10 @@ username:{
     type:String,
     required:true
 },
+membershipId:{
+    type:String,
+    unique:true
+},
 password:{
     type:String,
     required:true

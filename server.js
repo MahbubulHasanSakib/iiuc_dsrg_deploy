@@ -100,92 +100,7 @@ app.post('/login',async(req,res)=>{
 
 }) 
 
-/*app.get('/insertPass',async(req,res)=>{
-      const data1=[
-        {
-          
-          uname: 'aliansajib',
-          pass: '43454511',
-          
-        },
-        {
-        
-          uname: 'anowerhossen',
-          pass: '50882435',
-         
-        },
-        {
-          
-          uname: 'faysalnurontor',
-          pass: '60944373',
-          
-        },
-        {
-          
-          uname: 'mdshariahabib',
-          pass: '48325158',
-          
-        },
-        {
-          
-          uname: 'mdarafbinfaiz',
-          pass: '38444716',
-          
-        },
-        {
-          
-          uname: 'sagarmazumder',
-          pass: '66885583',
-          
-        },
-        {
-          
-          uname: 'sheikhmdhasibulhasan',
-          pass: '31259398',
-         
-        },
-        {
-         
-          uname: 'smanim',
-          pass: '50656440',
-          
-        },
-        {
-          
-          uname: 'turhansakib',
-          pass: '32355530',
-          
-        },
-        {
-         
-          uname: 'riadulisalmrabbi',
-          pass: '16300385',
-        
-        },
-        {
-          
-          uname: 'nazranamehjabin',
-          pass: '12654112',
-          
-        }
-    ]
-    data1.forEach(async (obj) => {
-        
-        const hashedPassword = await bcrypt.hash(obj.pass,10);
-      
-        // Create a new user document with the username, email, and hashed password
-        const newUser = new User({
-          username: obj.uname,
-          password: hashedPassword,
-          
-        });
-      
-        // Save the new user document to the collection
-        await newUser.save();
-      });
-      res.send("ok")
-})
-*/
+
 
 
 app.get('/getAutoPasswords',isAuth,isAdmin,async(req,res)=>{
@@ -642,7 +557,7 @@ const dateString = `${year}-${month}-${day}T${hours}:${minutes}`; */
         const member=await Member.findById(req.params.id)
         if(member)
         {
-            const {name,email,phone,field_of_interest,description}=req.body;
+            const {name,email,phone}=req.body;
             
             let imagePath='';
             if (req.file){
@@ -675,7 +590,11 @@ const dateString = `${year}-${month}-${day}T${hours}:${minutes}`; */
             member.profileImg = imagePath
             member.field_of_interest=req.body.field_of_interest||member.field_of_interest
             member.description=req.body.description||member.description
+            member.membershipId=req.body.membershipId||member.membershipId
             const updatedMember=await member.save();
+            const finduser=await User.findOne({username:member.username});
+            finduser.membershipId=member.membershipId;
+            const updatedUser=await finduser.save();
             return res.status(200).send({member:updatedMember,success:true})
             }
         }

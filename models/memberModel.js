@@ -47,6 +47,10 @@ username:{
     required:true,
     unique:true
 },
+membershipId:{
+    type:String,
+    unique:true
+},
 phone:{
     type:String,
     required:true
