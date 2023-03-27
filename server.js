@@ -69,12 +69,12 @@ app.get('/api/checkjwt', authenticateJWT, (req, res) => {
 
 
 app.post('/login',async(req,res)=>{
-   const {username,password}=req.body;
-    
-    const user=await User.findOne({username});
+   //const {username,password}=req.body;
+   const {membershipId,password}=req.body;
+    const user=await User.findOne({membershipId});
     if(!user)
     {
-        res.status(401).send('This user is not registered');
+       return res.status(401).send('This user is not registered or no membershipId');
     }
     else
     {
@@ -84,7 +84,7 @@ app.post('/login',async(req,res)=>{
             const generatedToken=jwt.sign({id:user._id},process.env.JWT_SECRET,{
                 expiresIn:'2h'
             })
-            res.json({
+            return res.json({
               _id:user._id,
               username:user.username,
               isAdmin:user.isAdmin,
@@ -93,7 +93,7 @@ app.post('/login',async(req,res)=>{
         }
         else
         {
-            return res.status(401).send('Email or password is wrong');
+            return res.status(401).send('Membership Id or password is wrong');
         }
     } 
 
