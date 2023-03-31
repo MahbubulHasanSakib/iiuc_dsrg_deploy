@@ -166,10 +166,22 @@ function sendMail(req, res, email, membershipId, username, userEmail) {
   })
 }
 
-app.post('/api/changeForgotPasswordRequest',(req, res) => {
+app.post('/api/changeForgotPasswordRequest',async(req, res) => {
   try {
     const { membershipId, username, userEmail } = req.body
-    if (membershipId != '' && username != '' && userEmail != '')
+    if (membershipId != '' && username != '' && userEmail != ''){
+      const isUserExist = await User.findOne({ username })
+    if (!isUserExist) {
+      return res
+        .status(404)
+        .send({ message: 'This user is not registered', success: false })
+    }
+
+    if (isUserExist.membershipId !== membershipId) {
+      return res
+        .status(401)
+        .send({ message: 'This membership is not found', success: false })
+    }
       sendMail(
         req,
         res,
@@ -178,6 +190,7 @@ app.post('/api/changeForgotPasswordRequest',(req, res) => {
         username,
         userEmail,
       )
+    }
     else return res.status(401).send({ message: 'All fields are required' })
   } catch (error) {
     return res.status(401).json({ message: error.message })
