@@ -158,30 +158,36 @@ function sendMail(req, res, email, membershipId, username, userEmail) {
   Transport.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error)
-      return res.status(500).send({success:false,message:"Server error",error})
+      return res
+        .status(500)
+        .send({ success: false, message: 'Server error', error })
     } else {
       console.log('Message sent ' + info.response)
-      return res.status(200).send({success:true,message:"Request has sent to admin successfully",info:info.response})
+      return res.status(200).send({
+        success: true,
+        message: 'Request has sent to admin successfully',
+        info: info.response,
+      })
     }
   })
 }
 
-app.post('/api/changeForgotPasswordRequest',async(req, res) => {
+app.post('/api/changeForgotPasswordRequest', async (req, res) => {
   try {
     const { membershipId, username, userEmail } = req.body
-    if (membershipId != '' && username != '' && userEmail != ''){
+    if (membershipId != '' && username != '' && userEmail != '') {
       const isUserExist = await User.findOne({ username })
-    if (!isUserExist) {
-      return res
-        .status(404)
-        .send({ message: 'This user is not registered', success: false })
-    }
+      if (!isUserExist) {
+        return res
+          .status(404)
+          .send({ message: 'This user is not registered', success: false })
+      }
 
-    if (isUserExist.membershipId !== membershipId) {
-      return res
-        .status(401)
-        .send({ message: 'This membership is not found', success: false })
-    }
+      if (isUserExist.membershipId !== membershipId) {
+        return res
+          .status(401)
+          .send({ message: 'This membership is not found', success: false })
+      }
       sendMail(
         req,
         res,
@@ -190,8 +196,7 @@ app.post('/api/changeForgotPasswordRequest',async(req, res) => {
         username,
         userEmail,
       )
-    }
-    else return res.status(401).send({ message: 'All fields are required' })
+    } else return res.status(401).send({ message: 'All fields are required' })
   } catch (error) {
     return res.status(401).json({ message: error.message })
   }
@@ -421,7 +426,8 @@ app.get('/api/events/:id', async (req, res) => {
     // const event=await Event.findById(req.params.id)
 
     const event = await DsrgEvent.findById(req.params.id)
-    return res.status(200).send(event)
+    if (event) return res.status(200).send(event)
+    else return res.status(404).send('No event is found')
   } catch (error) {
     return res.status(401).send('Error in fetching event')
   }
@@ -468,7 +474,6 @@ app.post(
   isAdmin,
   upload.array('event_image'),
   async (req, res) => {
-   
     try {
       const results = await Promise.all(
         req.files.map(async (file) => {
@@ -519,7 +524,6 @@ app.post(
   isAuth,
   upload.single('blog_image'),
   async (req, res) => {
-   
     let imagePath = ''
     if (req.file) {
       const extName = path.extname(req.file.originalname).toString()
@@ -585,12 +589,10 @@ app.put(
         if (!(name === '') && !(email === '') && !(phone === '')) {
           const isMemberExist = await Member.findOne({ email })
           if (isMemberExist && email !== member.email) {
-            return res
-              .status(401)
-              .send({
-                message: 'This member is already registered',
-                success: false,
-              })
+            return res.status(401).send({
+              message: 'This member is already registered',
+              success: false,
+            })
           } else {
             member.name = req.body.name || member.name
             member.email = req.body.email || member.email
@@ -790,7 +792,7 @@ app.post('/api/changeForgetPassword', isAuth, isAdmin, async (req, res) => {
   try {
     const { username, membershipId } = req.body
 
-    if (username=="" || membershipId=="") {
+    if (username == '' || membershipId == '') {
       return res
         .status(401)
         .send({ message: 'All * fields are required', success: false })
@@ -819,7 +821,10 @@ app.post('/api/changeForgetPassword', isAuth, isAdmin, async (req, res) => {
     isUserExist.password = hashedPassword
     await isUserExist.save()
 
-    return res.status(200).send({ message: 'Password changed successfully(auto password added)', success: true })
+    return res.status(200).send({
+      message: 'Password changed successfully(auto password added)',
+      success: true,
+    })
   } catch (error) {
     console.log(error)
     return res
